@@ -1,28 +1,27 @@
-# Java OOP - Practical Work 4
+# Java OOP Labs — SumDU
 
-Лабораторна робота №4 з дисципліни "Об'єктно-орієнтоване програмування на мові Java".
+Лабораторні роботи з дисципліни "Об'єктно-орієнтоване програмування на мові Java".
 
-## Тема
-Класи, масиви, ArrayList + GitHub + Maven.
-
-## Варіант 1
-Клас `Clothes` + масив об'єктів. Кількість елементів запитується у користувача.
+**Сумський державний університет**, кафедра інформаційних технологій, гр. ІН-31/2.
 
 ## Структура проєкту
-- `src/main/java/ua/edu/sumdu/j2se/pr4/Clothes.java` - клас предметної області
-- `src/main/java/ua/edu/sumdu/j2se/pr4/MainClass.java` - драйвер з методом `main`
-- `pom.xml` - конфігурація Maven
 
-## Як запустити
+Кожна лабораторна робота розміщується в окремому пакеті за схемою: src/main/java/ua/edu/sumdu/j2se/prN/
 
-### Через Maven
+де `N` — номер лабораторної роботи.
+
+## Збірка та запуск
+
+Проєкт використовує Maven як систему збірки:
+
 ```bash
 mvn clean compile
 ```
 
-### З терміналу
+Запуск конкретного класу:
+
 ```bash
-mvn exec:java -Dexec.mainClass="ua.edu.sumdu.j2se.pr4.MainClass"
+mvn exec:java -Dexec.mainClass="ua.edu.sumdu.j2se.prN.MainClass"
 ```
 
 ## Вимоги
@@ -30,4 +29,4 @@ mvn exec:java -Dexec.mainClass="ua.edu.sumdu.j2se.pr4.MainClass"
 - Maven 3.6+
 
 ## Автор
-Віхтенко Данило, гр. ІН-31/2
+Віхтенко Данило
