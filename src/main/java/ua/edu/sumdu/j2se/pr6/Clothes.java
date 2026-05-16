@@ -3,45 +3,40 @@ package ua.edu.sumdu.j2se.pr6;
 import java.util.Objects;
 
 /**
- * Розширений клас предметної області для лабораторної роботи №5.
- * Описує одиницю одягу з характеристиками: назва, розмір, колір, ціна,
- * матеріал, бренд та кількість на складі. Усі поля проходять валідацію
- * у конструкторі та сетерах; при некоректних даних кидається
- * {@link IllegalArgumentException}.
+ * Розширений клас предметної області для лабораторної роботи №6.
+ * Описує одиницю одягу. Поля size та material — типи перерахувань
+ * ({@link Size}, {@link Material}), що гарантує обмежений набір значень
+ * на рівні типів. Усі поля проходять валідацію у конструкторі та сетерах.
  */
 public class Clothes {
 
-    /** Дозволені значення для поля size. */
-    private static final String[] ALLOWED_SIZES = {"S", "M", "L", "XL", "XXL"};
-
     private String name;
-    private String size;
+    private Size size;
     private String color;
     private double price;
-    private String material;
+    private Material material;
     private String brand;
     private int quantity;
 
     /**
      * Створює новий об'єкт одягу з усіма характеристиками.
-     * Усі параметри валідуються; при некоректних значеннях кидається виняток.
      *
      * @param name     назва (не null, не порожня)
-     * @param size     розмір (S / M / L / XL / XXL)
+     * @param size     розмір (enum {@link Size}, не null)
      * @param color    колір (не null, не порожній)
      * @param price    ціна (> 0)
-     * @param material матеріал (не null, не порожній)
+     * @param material матеріал (enum {@link Material}, не null)
      * @param brand    бренд (не null, не порожній)
      * @param quantity кількість на складі (>= 0)
      * @throws IllegalArgumentException при некоректних вхідних даних
      */
-    public Clothes(String name, String size, String color, double price,
-                   String material, String brand, int quantity) {
+    public Clothes(String name, Size size, String color, double price,
+                   Material material, String brand, int quantity) {
         validateString(name, "name");
-        validateSize(size);
+        validateNotNull(size, "size");
         validateString(color, "color");
         validatePrice(price);
-        validateString(material, "material");
+        validateNotNull(material, "material");
         validateString(brand, "brand");
         validateQuantity(quantity);
 
@@ -63,12 +58,12 @@ public class Clothes {
         this.name = name;
     }
 
-    public String getSize() {
+    public Size getSize() {
         return size;
     }
 
-    public void setSize(String size) {
-        validateSize(size);
+    public void setSize(Size size) {
+        validateNotNull(size, "size");
         this.size = size;
     }
 
@@ -90,12 +85,12 @@ public class Clothes {
         this.price = price;
     }
 
-    public String getMaterial() {
+    public Material getMaterial() {
         return material;
     }
 
-    public void setMaterial(String material) {
-        validateString(material, "material");
+    public void setMaterial(Material material) {
+        validateNotNull(material, "material");
         this.material = material;
     }
 
@@ -119,10 +114,6 @@ public class Clothes {
 
     /**
      * Перевіряє, що рядок не null та не порожній.
-     *
-     * @param value     значення для перевірки
-     * @param fieldName ім'я поля для повідомлення про помилку
-     * @throws IllegalArgumentException якщо значення null або порожнє
      */
     private static void validateString(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
@@ -132,29 +123,17 @@ public class Clothes {
     }
 
     /**
-     * Перевіряє, що розмір — одне з дозволених значень.
-     *
-     * @param size значення розміру
-     * @throws IllegalArgumentException якщо розмір некоректний
+     * Перевіряє, що об'єкт не null.
      */
-    private static void validateSize(String size) {
-        if (size == null) {
-            throw new IllegalArgumentException("Розмір не може бути null");
+    private static void validateNotNull(Object value, String fieldName) {
+        if (value == null) {
+            throw new IllegalArgumentException(
+                    "Поле '" + fieldName + "' не може бути null");
         }
-        for (String allowed : ALLOWED_SIZES) {
-            if (allowed.equals(size)) {
-                return;
-            }
-        }
-        throw new IllegalArgumentException(
-                "Некоректний розмір: '" + size + "'. Допустимі: S, M, L, XL, XXL");
     }
 
     /**
      * Перевіряє, що ціна > 0.
-     *
-     * @param price значення ціни
-     * @throws IllegalArgumentException якщо ціна <= 0
      */
     private static void validatePrice(double price) {
         if (price <= 0) {
@@ -165,9 +144,6 @@ public class Clothes {
 
     /**
      * Перевіряє, що кількість >= 0.
-     *
-     * @param quantity значення кількості
-     * @throws IllegalArgumentException якщо кількість < 0
      */
     private static void validateQuantity(int quantity) {
         if (quantity < 0) {
@@ -180,10 +156,10 @@ public class Clothes {
     public String toString() {
         return "Clothes{"
                 + "name='" + name + '\''
-                + ", size='" + size + '\''
+                + ", size=" + size
                 + ", color='" + color + '\''
                 + ", price=" + price
-                + ", material='" + material + '\''
+                + ", material=" + material + " (" + material.getDescription() + ")"
                 + ", brand='" + brand + '\''
                 + ", quantity=" + quantity
                 + '}';
@@ -197,9 +173,9 @@ public class Clothes {
         return Double.compare(clothes.price, price) == 0
                 && quantity == clothes.quantity
                 && Objects.equals(name, clothes.name)
-                && Objects.equals(size, clothes.size)
+                && size == clothes.size
                 && Objects.equals(color, clothes.color)
-                && Objects.equals(material, clothes.material)
+                && material == clothes.material
                 && Objects.equals(brand, clothes.brand);
     }
 
