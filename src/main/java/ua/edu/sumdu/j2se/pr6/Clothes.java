@@ -7,8 +7,12 @@ import java.util.Objects;
  * Описує одиницю одягу. Поля size та material — типи перерахувань
  * ({@link Size}, {@link Material}), що гарантує обмежений набір значень
  * на рівні типів. Усі поля проходять валідацію у конструкторі та сетерах.
+ * Клас містить статичний лічильник створених об'єктів та конструктор копіювання.
  */
 public class Clothes {
+
+    /** Лічильник створених об'єктів класу (статичне поле). */
+    private static int instanceCount = 0;
 
     private String name;
     private Size size;
@@ -47,6 +51,40 @@ public class Clothes {
         this.material = material;
         this.brand = brand;
         this.quantity = quantity;
+
+        instanceCount++;
+    }
+
+    /**
+     * Конструктор копіювання. Створює новий об'єкт з полями,
+     * скопійованими з {@code other}. Лічильник об'єктів збільшується.
+     *
+     * @param other об'єкт для копіювання (не null)
+     * @throws IllegalArgumentException якщо other == null
+     */
+    public Clothes(Clothes other) {
+        if (other == null) {
+            throw new IllegalArgumentException(
+                    "Об'єкт для копіювання не може бути null");
+        }
+        this.name = other.name;
+        this.size = other.size;
+        this.color = other.color;
+        this.price = other.price;
+        this.material = other.material;
+        this.brand = other.brand;
+        this.quantity = other.quantity;
+
+        instanceCount++;
+    }
+
+    /**
+     * Повертає кількість створених об'єктів класу {@link Clothes}.
+     *
+     * @return загальна кількість створених екземплярів
+     */
+    public static int getInstanceCount() {
+        return instanceCount;
     }
 
     public String getName() {
@@ -114,6 +152,10 @@ public class Clothes {
 
     /**
      * Перевіряє, що рядок не null та не порожній.
+     *
+     * @param value     значення для перевірки
+     * @param fieldName ім'я поля для повідомлення про помилку
+     * @throws IllegalArgumentException якщо значення null або порожнє
      */
     private static void validateString(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
@@ -124,6 +166,10 @@ public class Clothes {
 
     /**
      * Перевіряє, що об'єкт не null.
+     *
+     * @param value     значення для перевірки
+     * @param fieldName ім'я поля для повідомлення про помилку
+     * @throws IllegalArgumentException якщо значення null
      */
     private static void validateNotNull(Object value, String fieldName) {
         if (value == null) {
@@ -134,6 +180,9 @@ public class Clothes {
 
     /**
      * Перевіряє, що ціна > 0.
+     *
+     * @param price значення ціни
+     * @throws IllegalArgumentException якщо ціна <= 0
      */
     private static void validatePrice(double price) {
         if (price <= 0) {
@@ -144,6 +193,9 @@ public class Clothes {
 
     /**
      * Перевіряє, що кількість >= 0.
+     *
+     * @param quantity значення кількості
+     * @throws IllegalArgumentException якщо кількість < 0
      */
     private static void validateQuantity(int quantity) {
         if (quantity < 0) {
