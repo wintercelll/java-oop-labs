@@ -1,28 +1,27 @@
 package ua.edu.sumdu.j2se.pr6;
 
-import ua.edu.sumdu.j2se.pr5.Clothes;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
- * Драйвер-клас з консольним меню для роботи з об'єктами {@link ua.edu.sumdu.j2se.pr5.Clothes}.
- * Підтримує створення нових об'єктів, перегляд списку та коректну
- * обробку помилок введення (нечислове введення, порожні рядки,
- * некоректні значення).
+ * Драйвер-клас для лабораторної роботи №6.
+ * Демонструє роботу з enum-полями, копі-конструктором,
+ * статичним лічильником об'єктів та класом-агрегатором {@link Store}.
  */
 public class MainClass {
 
     private static final Scanner SCANNER = new Scanner(System.in);
 
     /**
-     * Точка входу програми. Запускає головний цикл меню.
+     * Точка входу програми. Виводить інформаційну шапку,
+     * створює магазин і запускає головний цикл меню.
      *
      * @param args аргументи командного рядка (не використовуються)
      */
     public static void main(String[] args) {
-        List<ua.edu.sumdu.j2se.pr5.Clothes> items = new ArrayList<>();
+        printInfoHeader();
+
+        Store store = new Store("Модний одяг");
+        Clothes lastCreated = null;
 
         while (true) {
             printMenu();
@@ -30,62 +29,71 @@ public class MainClass {
 
             switch (choice) {
                 case 1:
-                    ua.edu.sumdu.j2se.pr5.Clothes c = readClothes();
-                    if (c != null) {
-                        items.add(c);
-                        System.out.println("Об'єкт успішно додано.");
+                    Clothes created = readClothes();
+                    if (created != null) {
+                        store.addItem(created);
+                        lastCreated = created;
+                        System.out.println("Об'єкт успішно додано в магазин.");
                     }
                     break;
                 case 2:
-                    displayAll(items);
+                    if (lastCreated == null) {
+                        System.out.println("Спочатку створіть хоча б один об'єкт.");
+                    } else {
+                        Clothes copy = new Clothes(lastCreated);
+                        store.addItem(copy);
+                        System.out.println("Створено копію: " + copy);
+                    }
                     break;
                 case 3:
+                    store.printInventory();
+                    break;
+                case 4:
+                    System.out.println("Загальна кількість створених об'єктів Clothes: "
+                            + Clothes.getInstanceCount());
+                    break;
+                case 5:
                     System.out.println("Завершення роботи.");
                     SCANNER.close();
                     return;
                 default:
-                    System.out.println("Невідомий пункт меню. Спробуйте ще раз.");
+                    System.out.println("Невідомий пункт меню.");
             }
         }
+    }
+
+    /** Виводить інформаційну шапку програми. */
+    private static void printInfoHeader() {
+        System.out.println("========================================");
+        System.out.println("  Лабораторна робота №6");
+        System.out.println("  ООП на мові Java, СумДУ, гр. ІН-31/2");
+        System.out.println("  Віхтенко Данило");
+        System.out.println("  Варіант 1: Clothes + Store");
+        System.out.println("========================================");
     }
 
     /** Виводить пункти головного меню. */
     private static void printMenu() {
         System.out.println();
         System.out.println("=== МЕНЮ ===");
-        System.out.println("1. Створити новий об'єкт");
-        System.out.println("2. Вивести інформацію про всі об'єкти");
-        System.out.println("3. Завершити роботу");
+        System.out.println("1. Створити новий об'єкт Clothes");
+        System.out.println("2. Створити копію останнього об'єкта (копі-конструктор)");
+        System.out.println("3. Вивести інвентар магазину");
+        System.out.println("4. Кількість створених об'єктів (статичний лічильник)");
+        System.out.println("5. Завершити роботу");
     }
 
     /**
-     * Виводить список усіх об'єктів через {@link ua.edu.sumdu.j2se.pr5.Clothes#toString()}.
-     *
-     * @param items список об'єктів
-     */
-    private static void displayAll(List<ua.edu.sumdu.j2se.pr5.Clothes> items) {
-        if (items.isEmpty()) {
-            System.out.println("Список порожній.");
-            return;
-        }
-        System.out.println("=== Список об'єктів (всього: " + items.size() + ") ===");
-        for (int i = 0; i < items.size(); i++) {
-            System.out.println((i + 1) + ". " + items.get(i));
-        }
-    }
-
-    /**
-     * Зчитує всі поля з клавіатури та намагається створити об'єкт {@link ua.edu.sumdu.j2se.pr5.Clothes}.
-     * При помилках валідації виводить повідомлення і повертає null.
+     * Зчитує всі поля з клавіатури та намагається створити об'єкт {@link Clothes}.
      *
      * @return новий об'єкт або null, якщо валідація не пройшла
      */
-    private static ua.edu.sumdu.j2se.pr5.Clothes readClothes() {
+    private static Clothes readClothes() {
         String name = readStringSafe("Назва: ");
-        String size = readStringSafe("Розмір (S/M/L/XL/XXL): ");
+        Size size = readSize();
         String color = readStringSafe("Колір: ");
         double price = readDoubleSafe("Ціна: ");
-        String material = readStringSafe("Матеріал: ");
+        Material material = readMaterial();
         String brand = readStringSafe("Бренд: ");
         int quantity = readIntSafe("Кількість на складі: ");
 
@@ -98,10 +106,52 @@ public class MainClass {
     }
 
     /**
-     * Зчитує непорожній рядок. Повторює запит, якщо введено порожній рядок.
+     * Зчитує значення enum {@link Size} від користувача.
+     * Виводить список доступних варіантів та повторює запит при помилці.
      *
-     * @param prompt текст запрошення
-     * @return непорожній рядок
+     * @return обране значення Size
+     */
+    private static Size readSize() {
+        while (true) {
+            System.out.print("Доступні розміри: ");
+            for (Size s : Size.values()) {
+                System.out.print(s + " ");
+            }
+            System.out.println();
+            System.out.print("Розмір: ");
+            String input = SCANNER.nextLine().trim().toUpperCase();
+            try {
+                return Size.valueOf(input);
+            } catch (IllegalArgumentException e) {
+                System.out.println("ПОМИЛКА: невідомий розмір.");
+            }
+        }
+    }
+
+    /**
+     * Зчитує значення enum {@link Material} від користувача.
+     * Виводить список доступних варіантів з описами.
+     *
+     * @return обране значення Material
+     */
+    private static Material readMaterial() {
+        while (true) {
+            System.out.println("Доступні матеріали:");
+            for (Material m : Material.values()) {
+                System.out.println("  " + m + " (" + m.getDescription() + ")");
+            }
+            System.out.print("Матеріал: ");
+            String input = SCANNER.nextLine().trim().toUpperCase();
+            try {
+                return Material.valueOf(input);
+            } catch (IllegalArgumentException e) {
+                System.out.println("ПОМИЛКА: невідомий матеріал.");
+            }
+        }
+    }
+
+    /**
+     * Зчитує непорожній рядок. Повторює запит, якщо введено порожній рядок.
      */
     private static String readStringSafe(String prompt) {
         while (true) {
@@ -116,9 +166,6 @@ public class MainClass {
 
     /**
      * Зчитує ціле число. Повторює запит при нечисловому вводі.
-     *
-     * @param prompt текст запрошення
-     * @return ціле число
      */
     private static int readIntSafe(String prompt) {
         while (true) {
@@ -133,11 +180,7 @@ public class MainClass {
     }
 
     /**
-     * Зчитує дійсне число. Повторює запит при нечисловому вводі.
-     * Допускає кому як десятковий розділювач.
-     *
-     * @param prompt текст запрошення
-     * @return дійсне число
+     * Зчитує дійсне число. Підтримує кому як десятковий розділювач.
      */
     private static double readDoubleSafe(String prompt) {
         while (true) {
