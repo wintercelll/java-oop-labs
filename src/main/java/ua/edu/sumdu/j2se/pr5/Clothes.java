@@ -3,8 +3,9 @@ package ua.edu.sumdu.j2se.pr5;
 import java.util.Objects;
 
 /**
- * Клас предметної області, що описує одиницю одягу.
- * Містить характеристики: назва, розмір, колір, ціна, матеріал.
+ * Розширений клас предметної області для лабораторної роботи №5.
+ * Описує одиницю одягу з характеристиками: назва, розмір, колір, ціна,
+ * матеріал, бренд та кількість на складі.
  */
 public class Clothes {
 
@@ -13,6 +14,8 @@ public class Clothes {
     private String color;
     private double price;
     private String material;
+    private String brand;
+    private int quantity;
 
     /**
      * Створює новий об'єкт одягу з усіма характеристиками.
@@ -22,13 +25,18 @@ public class Clothes {
      * @param color    колір
      * @param price    ціна в гривнях
      * @param material матеріал виготовлення
+     * @param brand    бренд виробника
+     * @param quantity кількість одиниць на складі
      */
-    public Clothes(String name, String size, String color, double price, String material) {
+    public Clothes(String name, String size, String color, double price,
+                   String material, String brand, int quantity) {
         this.name = name;
         this.size = size;
         this.color = color;
         this.price = price;
         this.material = material;
+        this.brand = brand;
+        this.quantity = quantity;
     }
 
     public String getName() {
@@ -71,6 +79,22 @@ public class Clothes {
         this.material = material;
     }
 
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     /**
      * Повертає текстовий опис об'єкта одягу.
      *
@@ -84,15 +108,16 @@ public class Clothes {
                 + ", color='" + color + '\''
                 + ", price=" + price
                 + ", material='" + material + '\''
+                + ", brand='" + brand + '\''
+                + ", quantity=" + quantity
                 + '}';
     }
 
     /**
      * Перевіряє рівність двох об'єктів одягу.
-     * Два об'єкти рівні, якщо всі їхні поля збігаються.
      *
      * @param o інший об'єкт для порівняння
-     * @return true якщо об'єкти рівні
+     * @return true якщо всі поля збігаються
      */
     @Override
     public boolean equals(Object o) {
@@ -100,10 +125,12 @@ public class Clothes {
         if (o == null || getClass() != o.getClass()) return false;
         Clothes clothes = (Clothes) o;
         return Double.compare(clothes.price, price) == 0
+                && quantity == clothes.quantity
                 && Objects.equals(name, clothes.name)
                 && Objects.equals(size, clothes.size)
                 && Objects.equals(color, clothes.color)
-                && Objects.equals(material, clothes.material);
+                && Objects.equals(material, clothes.material)
+                && Objects.equals(brand, clothes.brand);
     }
 
     /**
@@ -113,6 +140,6 @@ public class Clothes {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, size, color, price, material);
+        return Objects.hash(name, size, color, price, material, brand, quantity);
     }
 }
